@@ -347,7 +347,7 @@ with tab1:
     if vista_temporal == "Trimestral":
         query_tendencia = f"""
         SELECT
-            DATE_FORMAT(order_date, '%Y-%m-01') AS fecha,
+            MIN(order_date) AS fecha,
             MONTH(order_date) AS mes,
             COUNT(*) AS num_ordenes,
             COALESCE(SUM(total), 0) AS ventas
@@ -355,7 +355,7 @@ with tab1:
         WHERE payment_status = 'Pagado'
             AND YEAR(order_date) = {año_seleccionado}
             AND QUARTER(order_date) = {trimestre_seleccionado}
-        GROUP BY DATE_FORMAT(order_date, '%Y-%m-01'), MONTH(order_date)
+        GROUP BY YEAR(order_date), MONTH(order_date)
         ORDER BY fecha
         """
     elif vista_temporal == "Mensual":
@@ -823,13 +823,13 @@ with tab3:
     elif periodo == "Mensual":
         query_comp = """
         SELECT
-            DATE_FORMAT(order_date, '%Y-%m') as periodo,
+            MIN(order_date) as periodo,
             COUNT(*) as num_ordenes,
             SUM(total) as total_ventas,
             AVG(total) as ticket_promedio
         FROM orders
         WHERE payment_status = 'Pagado'
-        GROUP BY DATE_FORMAT(order_date, '%Y-%m')
+        GROUP BY YEAR(order_date), MONTH(order_date)
         ORDER BY periodo DESC
         LIMIT 12
         """
