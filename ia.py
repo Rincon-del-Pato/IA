@@ -13,6 +13,13 @@ from sklearn.cluster import KMeans  # Añadido KMeans
 from sklearn.preprocessing import StandardScaler
 from scipy import stats
 
+# Al inicio del archivo, después de las importaciones
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
+
 # Agregar después de las importaciones
 PLOT_STYLE = {
     "figure.figsize": (14, 8),
@@ -65,10 +72,10 @@ MESES_ABREV = {
 # Configuración de la conexión con MySQL
 def create_connection():
     connection = mysql.connector.connect(
-        host="localhost",  # Cambia esto a tu configuración
-        user="root",
-        password="root",
-        database="tesisii",
+        host=os.getenv("DB_HOST", "localhost"),
+        user=os.getenv("DB_USER", "firetens_prueba"),
+        password=os.getenv("DB_PASSWORD", "0xVL}]LGr?+M"),
+        database=os.getenv("DB_NAME", "firetens_tesisii")
     )
     return connection
 
