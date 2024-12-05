@@ -1,11 +1,10 @@
 import streamlit as st
-import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from sqlalchemy import create_engine
 import urllib.parse
-import sqlalchemy
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
@@ -67,12 +66,11 @@ MESES_ABREV = {
 def create_connection():
     try:
         password = '0xVL}]LGr?+M'
-        escaped_password = urllib.parse.quote(password)
+        escaped_password = urllib.parse.quote_plus(password)
         
-        # Crear conexión usando SQLAlchemy
-        engine = sqlalchemy.create_engine(
-            f'mysql+pymysql://firetens_prueba:{escaped_password}@firetensor.com:3306/firetens_tesisii'
-        )
+        # Crear conexión usando SQLAlchemy con quote_plus para caracteres especiales
+        connection_string = f'mysql+pymysql://firetens_prueba:{escaped_password}@firetensor.com:3306/firetens_tesisii'
+        engine = create_engine(connection_string)
         return engine.connect()
     except Exception as e:
         st.error(f"Error de conexión a la base de datos: {str(e)}")
