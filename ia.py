@@ -12,20 +12,20 @@ from sklearn.preprocessing import StandardScaler
 from scipy import stats
 import os
 
-# Configuración de la conexión con MySQL
-def create_connection():
-    try:
-        # Usar directamente st.secrets
-        connection = mysql.connector.connect(
-            host="localhost",  # No cambiar esto, es el host real
-            user="firetens_prueba",
-            password="0xVL}]LGr?+M",
-            database="firetens_tesisii"
-        )
-        return connection
-    except Exception as e:
-        st.error(f"Error de conexión a la base de datos: {str(e)}")
-        return None
+# Definir PLOT_STYLE antes de usarlo
+PLOT_STYLE = {
+    "figure.figsize": (14, 8),
+    "font.size": 16,
+    "axes.titlesize": 20,
+    "axes.labelsize": 18,
+    "xtick.labelsize": 14,
+    "ytick.labelsize": 14,
+    "legend.fontsize": 16,
+    "axes.linewidth": 1.5,
+    "grid.linewidth": 0.8,
+    "lines.linewidth": 2.5,
+    "lines.markersize": 10,
+}
 
 # Aplicar estilo global para todas las gráficas
 plt.rcParams.update(PLOT_STYLE)
