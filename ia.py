@@ -5,35 +5,27 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from statsmodels.tsa.arima.model import ARIMA
-
-# Cambiar importaciones
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.cluster import KMeans  # Añadido KMeans
+from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from scipy import stats
-
-# Al inicio del archivo, después de las importaciones
 import os
-from dotenv import load_dotenv
 
-# Cargar variables de entorno
-load_dotenv()
-
-# Agregar después de las importaciones
-PLOT_STYLE = {
-    "figure.figsize": (14, 8),
-    "font.size": 16,  # Aumentado de 14 a 16
-    "axes.titlesize": 20,  # Aumentado de 16 a 20
-    "axes.labelsize": 18,  # Aumentado de 14 a 18
-    "xtick.labelsize": 14,  # Aumentado de 12 a 14
-    "ytick.labelsize": 14,  # Aumentado de 12 a 14
-    "legend.fontsize": 16,  # Aumentado de 12 a 16
-    "axes.linewidth": 1.5,
-    "grid.linewidth": 0.8,
-    "lines.linewidth": 2.5,  # Aumentado de 2 a 2.5
-    "lines.markersize": 10,  # Aumentado de 8 a 10
-}
+# Configuración de la conexión con MySQL
+def create_connection():
+    try:
+        # Usar directamente st.secrets
+        connection = mysql.connector.connect(
+            host="localhost",  # No cambiar esto, es el host real
+            user="firetens_prueba",
+            password="0xVL}]LGr?+M",
+            database="firetens_tesisii"
+        )
+        return connection
+    except Exception as e:
+        st.error(f"Error de conexión a la base de datos: {str(e)}")
+        return None
 
 # Aplicar estilo global para todas las gráficas
 plt.rcParams.update(PLOT_STYLE)
@@ -71,12 +63,22 @@ MESES_ABREV = {
 
 # Configuración de la conexión con MySQL
 def create_connection():
-    connection = mysql.connector.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        user=os.getenv("DB_USER", "firetens_prueba"),
-        password=os.getenv("DB_PASSWORD", "0xVL}]LGr?+M"),
-        database=os.getenv("DB_NAME", "firetens_tesisii")
-    )
+    try:
+        # Intentar usar st.secrets primero (para Streamlit Cloud)
+        connection = mysql.connector.connect(
+            host=st.secrets.get("DB_HOST", "localhost"),
+            user=st.secrets.get("DB_USER", "firetens_prueba"),
+            password=st.secrets.get("DB_PASSWORD", "0xVL}]LGr?+M"),
+            database=st.secrets.get("DB_NAME", "firetens_tesisii")
+        )
+    except (AttributeError, Exception):
+        # Si falla, usar variables de entorno
+        connection = mysql.connector.connect(
+            host=os.getenv("DB_HOST", "localhost"),
+            user=os.getenv("DB_USER", "firetens_prueba"),
+            password=os.getenv("DB_PASSWORD", "0xVL}]LGr?+M"),
+            database=os.getenv("DB_NAME", "firetens_tesisii")
+        )
     return connection
 
 
