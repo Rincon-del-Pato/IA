@@ -4,6 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import urllib.parse
+import sqlalchemy
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
@@ -64,30 +66,28 @@ MESES_ABREV = {
 # Configuración de la conexión con MySQL
 def create_connection():
     try:
-        # Intentar usar st.secrets primero (para Streamlit Cloud)
-        connection = mysql.connector.connect(
-            host=st.secrets.get("DB_HOST", "localhost"),
-            user=st.secrets.get("DB_USER", "firetens_prueba"),
-            password=st.secrets.get("DB_PASSWORD", "0xVL}]LGr?+M"),
-            database=st.secrets.get("DB_NAME", "firetens_tesisii")
+        password = '0xVL}]LGr?+M'
+        escaped_password = urllib.parse.quote(password)
+        
+        # Crear conexión usando SQLAlchemy
+        engine = sqlalchemy.create_engine(
+            f'mysql+pymysql://firetens_prueba:{escaped_password}@firetensor.com:3306/firetens_tesisii'
         )
-    except (AttributeError, Exception):
-        # Si falla, usar variables de entorno
-        connection = mysql.connector.connect(
-            host=os.getenv("DB_HOST", "localhost"),
-            user=os.getenv("DB_USER", "firetens_prueba"),
-            password=os.getenv("DB_PASSWORD", "0xVL}]LGr?+M"),
-            database=os.getenv("DB_NAME", "firetens_tesisii")
-        )
-    return connection
+        return engine.connect()
+    except Exception as e:
+        st.error(f"Error de conexión a la base de datos: {str(e)}")
+        return None
 
-
-# Función para obtener los datos de la base de datos
+# Modificar la función get_data_from_sql para usar SQLAlchemy
 def get_data_from_sql(query):
     connection = create_connection()
-    data = pd.read_sql(query, connection)
-    connection.close()
-    return data
+    if connection is not None:
+        try:
+            data = pd.read_sql(query, connection)
+            return data
+        finally:
+            connection.close()
+    return pd.DataFrame()  # Retornar DataFrame vacío si hay error
 
 
 # Función para predecir las ventas con ARIMA
